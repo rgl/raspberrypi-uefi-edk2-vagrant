@@ -78,6 +78,55 @@ cp Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd /vagrant/tmp
         INF Drivers/OptionRomPkg/Bus/Usb/UsbNetworking/Ax88179/Ax88179.inf
     ```
 
+## Serial Console
+
+Raspberry Pi 4B has two serial ports:
+
+* PL011 UART (aka UART0/ttyAMA0)
+* mini UART (aka UART1/ttyS0)
+
+The `config.txt` file configures which of them is assigned to the
+serial console GPIO pins 14 (TX) and 15 (RX).
+
+The default configuration of the Raspberry Pi 4 UEFI EDK2 firmware
+configures the serial console to use PL011 UART with:
+
+```conf
+enable_uart=1
+uart_2ndstage=1
+dtoverlay=miniuart-bt
+```
+
+For more information see:
+
+* [Raspberry Pi Serial Console / UART](https://www.raspberrypi.org/documentation/configuration/uart.md)
+* [miniuart-bt documentation](https://github.com/raspberrypi/firmware/blob/dd8cbec5a6d27090e5eb080e13d83c35fdd759f7/boot/overlays/README#L1691-L1702)
+
+To access the serial console from your PC you normally use a
+USB-to-SERIAL cable (3.3v). For example, the [adafruit cable](https://www.adafruit.com/product/954),
+has four colored wires, which [must be connected as](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-5-using-a-console-cable/connect-the-lead):
+
+| cable wire function | cable wire color | RPi GPIO      |
+|---------------------|------------------|---------------|
+| GND                 | black            | GND           |
+| RX                  | white            | GPIO 14 / TX  |
+| TX                  | green            | GPIO 15 / RX  |
+| 5v                  | red              | NOT CONNECTED |
+
+Then, in your PC, connect to the serial console with:
+
+```bash
+sudo apt-get install -y picocom
+# NB to quit picocom type Ctrl+A, Ctrl+X.
+# NB to use ESC key you have to press it once and wait a bit or
+#    you need to press it twice.
+# NB to send the F10 key you must prevent your terminal emulator
+#    from using that key. in gnome, select the Edit menu,
+#    Preferences, General tab and then unselect the Enable the
+#    menu accelerator key option.
+sudo picocom --baud 115200 /dev/ttyUSB0
+```
+
 ## Reference
 
 * https://github.com/pftf/RPi4/blob/da46a6e91715f1b6f15d1c7c9aa49de6337c62d9/appveyor.yml
