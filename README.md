@@ -113,11 +113,11 @@ has four colored wires, which [must be connected as](https://learn.adafruit.com/
 | TX                  | green            | GPIO 15 / RX  |
 | 5v                  | red              | NOT CONNECTED |
 
-Then, in your PC, connect to the serial console with:
+Then, in your PC, you can connect to the serial console with picocom:
 
 ```bash
 sudo apt-get install -y picocom
-# NB to quit picocom type Ctrl+A, Ctrl+X.
+# NB to quit picocom type Ctrl+A Ctrl+X.
 # NB to use ESC key you have to press it once and wait a bit or
 #    you need to press it twice.
 # NB to send the F10 key you must prevent your terminal emulator
@@ -125,6 +125,39 @@ sudo apt-get install -y picocom
 #    Preferences, General tab and then unselect the Enable the
 #    menu accelerator key option.
 sudo picocom --baud 115200 /dev/ttyUSB0
+```
+
+Or, if you prefer, with minicom:
+
+```bash
+sudo apt-get install -y minicom
+sudo tee /etc/minicom/minirc.rpi >/dev/null <<'EOF'
+# NB use "minicom -s rpi" to change these default parameters.
+pu port       /dev/ttyUSB0
+pu baudrate   115200
+pu bits       8
+pu parity     N
+pu stopbits   1
+pu hasdcd     No    # disable DCD line detection.
+pu rtscts     No    # disable hardware flow control.
+pu xonxoff    No    # disable software flow control.
+pu histlines  5000
+EOF
+# NB to quit minicom type Ctrl+A Q.
+# NB minicom will say its offline when the usb-to-serial adaptor
+#    does not support the Data Carrier Detect (DCD) line, and
+#    even if it would, the RPi serial console pins do not have
+#    support for it. so just ignore the offline message or change
+#    the status line with the -F or --statlinefmt argument.
+# NB to use ESC key you have to press it once and wait a bit or
+#    you need to press it twice.
+# NB to send the F10 key you must prevent your terminal emulator
+#    from using that key. in gnome, select the Edit menu,
+#    Preferences, General tab and then unselect the Enable the
+#    menu accelerator key option.
+# NB you can use --device=/dev/ttyUSBX to override the value
+#    from minirc.rpi.
+sudo minicom --color=on rpi
 ```
 
 ## Reference
