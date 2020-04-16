@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # install the dependencies.
-# see https://github.com/pftf/RPi4/blob/da46a6e91715f1b6f15d1c7c9aa49de6337c62d9/appveyor.yml
+# see https://github.com/pftf/RPi4/blob/v1.8/appveyor.yml
 apt-get install -y \
     acpica-tools gcc-aarch64-linux-gnu python3-distutils uuid-dev \
     build-essential dos2unix
@@ -16,7 +16,7 @@ set -euxo pipefail
 # clone the rpi4-uefi repo.
 git clone https://github.com/pftf/RPi4 rpi4-uefi
 cd rpi4-uefi
-git checkout da46a6e91715f1b6f15d1c7c9aa49de6337c62d9
+git checkout v1.8
 git submodule update --init --recursive
 
 # install our build scripts.

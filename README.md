@@ -162,8 +162,8 @@ sudo minicom --color=on rpi
 
 ## Reference
 
-* https://github.com/pftf/RPi4/blob/da46a6e91715f1b6f15d1c7c9aa49de6337c62d9/appveyor.yml
-* https://github.com/pftf/RPi4/blob/da46a6e91715f1b6f15d1c7c9aa49de6337c62d9/build_firmware.sh
+* https://github.com/pftf/RPi4/blob/v1.8/appveyor.yml
+* https://github.com/pftf/RPi4/blob/v1.8/build_firmware.sh
 
 ## Interesting projects
 
