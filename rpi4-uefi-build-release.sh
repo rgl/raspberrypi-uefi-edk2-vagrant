@@ -2,6 +2,7 @@
 source rpi4-uefi-environment.sh
 set -euxo pipefail
 
+# build.
 build \
     -a AARCH64 \
     -t GCC5 \
@@ -12,4 +13,7 @@ build \
     -D SECURE_BOOT_ENABLE=TRUE \
     -D INCLUDE_TFTP_COMMAND=TRUE
 
-ls -laF Build/RPi4/*_GCC5/FV/RPI_EFI.fd
+# copy to the host.
+mkdir -p /vagant/tmp
+cp Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd /vagrant/tmp/
+ls -laF /vagrant/tmp/RPI_EFI.fd

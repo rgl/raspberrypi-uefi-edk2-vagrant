@@ -55,9 +55,9 @@ Clean and build:
 
 ```bash
 rm -rf Build
+# NB after a successful build Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd is
+#    copied to the host as /vagrant/tmp/RPI_EFI.fd.
 time ./rpi4-uefi-build-release.sh
-mkdir -p /vagrant/tmp
-cp Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd /vagrant/tmp
 ```
 
 ## EDK2 Notes
