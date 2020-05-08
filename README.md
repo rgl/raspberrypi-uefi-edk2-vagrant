@@ -56,6 +56,7 @@ Clean and build:
 ```bash
 rm -rf Build
 time ./rpi4-uefi-build-release.sh
+mkdir -p /vagrant/tmp
 cp Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd /vagrant/tmp
 ```
 
@@ -162,8 +163,8 @@ sudo minicom --color=on rpi
 
 ## Reference
 
-* https://github.com/pftf/RPi4/blob/v1.8/appveyor.yml
-* https://github.com/pftf/RPi4/blob/v1.8/build_firmware.sh
+* https://github.com/pftf/RPi4/blob/v1.11/appveyor.yml
+* https://github.com/pftf/RPi4/blob/v1.11/build_firmware.sh
 
 ## Interesting projects
 
