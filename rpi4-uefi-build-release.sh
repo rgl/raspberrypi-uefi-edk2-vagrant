@@ -14,6 +14,6 @@ build \
     -D INCLUDE_TFTP_COMMAND=TRUE
 
 # copy to the host.
-mkdir -p /vagant/tmp
+mkdir -p /vagrant/tmp
 cp Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd /vagrant/tmp/
 ls -laF /vagrant/tmp/RPI_EFI.fd
