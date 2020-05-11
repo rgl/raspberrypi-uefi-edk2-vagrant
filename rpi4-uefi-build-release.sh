@@ -3,7 +3,9 @@ source rpi4-uefi-environment.sh
 set -euxo pipefail
 
 # build.
+NUM_CPUS=$((`getconf _NPROCESSORS_ONLN` + 2))
 build \
+    -n $NUM_CPUS \
     -a AARCH64 \
     -t GCC5 \
     -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc \
