@@ -60,6 +60,61 @@ rm -rf Build
 time ./rpi4-uefi-build-release.sh
 ```
 
+## iPXE
+
+Build `ipxe.efi` (with the [rpi.ipxe](rpi.ipxe) embedded script):
+
+```bash
+vagrant ssh
+
+# NB after a successful build ~/ipxe/src/bin-arm64-efi/ipxe.efi is
+#    copied to the host as /vagrant/tmp/ipxe.efi.
+time bash /vagrant/build-ipxe.sh
+
+# return to the host shell.
+exit
+```
+
+There are two ways to use iPXE:
+
+1. Use it as the default UEFI boot application.
+2. Configure UEFI to load it from an HTTP endpoint.
+
+To use it as the default UEFI boot application, the file has to be
+installed at `efi/boot/bootaa64.efi`:
+
+```bash
+install -d /media/$USER/RPI4-UEFI/efi/boot
+install tmp/ipxe.efi /media/$USER/RPI4-UEFI/efi/boot/bootaa64.efi
+```
+
+To configure UEFI to load it from an HTTP endpoint, you need to
+start an http server to serve `ipxe.efi`:
+
+```bash
+python3 -m http.server 8000 -d tmp
+```
+
+Then power on the Raspberry Pi.
+
+After it shows the UEFI boot prompt, press `ESC` to enter the EDK2 Setup,
+then:
+
+1. Select `Device Manager` and press `ENTER`.
+2. Select `Network Device List` and press `ENTER`.
+3. Select your network interface, e.g., `MAC:DC:A6:32:27:F5:46`, and
+   press `ENTER`.
+4. Select `HTTP Boot Configuration` and press `ENTER`.
+5. Select `Boot URI` and press `ENTER`, then input the `ipxe.efi` url made
+   available by the http server, e.g., `http://192.168.1.69:8000/ipxe.efi`,
+   and press `ENTER`.
+6. Press `F10` to save the changes.
+7. Keep pressing `ESC` until you reach the main setup menu.
+8. Select `Boot Manager`.
+9. Select the entry created in 5 and press `ENTER`.
+
+The Pi should download and start the `ipxe.efi` application.
+
 ## EDK2 Notes
 
 * The build is described by the `edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc` file.

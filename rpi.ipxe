@@ -1,0 +1,37 @@
+#!ipxe
+# see https://ipxe.org/docs
+# see https://ipxe.org/settings
+
+# show the system information.
+# NB you can run "config" to interactively see all the possible variables.
+echo Platform..... ${platform}
+echo Architecture. ${buildarch}
+echo Product...... ${smbios/product}
+echo Manufacturer. ${smbios/manufacturer}
+echo Asset........ ${smbios/asset}
+echo UUID......... ${smbios/uuid}
+echo Serial....... ${smbios/serial}
+
+echo Configuring ${net0/mac} from dhcp...
+:retry_ifconf
+ifconf --configurator dhcp net0 || goto retry_ifconf
+echo MAC address.. ${net0/mac}
+echo IP address... ${net0/ip}
+echo Subnet mask.. ${net0/netmask}
+echo Gateway...... ${net0/gateway}
+echo DNS.......... ${net0/dns}
+
+# we need to set the time from ntp because the pi does not have an rtc.
+# NB having the correct time is a requirement to use TLS.
+echo Getting the current time from ntp...
+:retry_ntp
+ntp pool.ntp.org || goto retry_ntp
+# in a bash you can convert this into a date with, e.g.:
+#   date --date=@$((0x5ebfcbbb))
+# see https://ipxe.org/cfg/unixtime
+echo Unix Time.... ${unixtime}
+
+echo Dropping into the shell...
+echo TIP You can test-drive this with:
+echo       chain --autofree https://boot.netboot.xyz
+shell
