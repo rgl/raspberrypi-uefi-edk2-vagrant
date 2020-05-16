@@ -13,7 +13,7 @@ build \
     --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"rgl" \
     --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware RGL-CUSTOM" \
     -D SECURE_BOOT_ENABLE=TRUE \
-    -D INCLUDE_TFTP_COMMAND=TRUE
+    -D INCLUDE_TFTP_COMMAND=FALSE
 
 # copy to the host.
 # NB we also copy the Shell.efi file because its easier to use it
