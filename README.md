@@ -19,20 +19,19 @@ Enter the environment and build `RPI_EFI.fd`:
 vagrant ssh
 
 # build the release version of RPI_EFI.fd.
+# NB after a successful build Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd is
+#    automatically copied to the host as /vagrant/tmp/RPI_EFI.fd.
 cd rpi4-uefi
 time ./rpi4-uefi-build-release.sh
-
-# copy the resulting firmware image to the host.
-install -d /vagrant/tmp
-cp Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd /vagrant/tmp
 ```
 
 Then flash the sd-card as described at https://gist.github.com/rgl/95b8ccd6b3453f548907b579d4d04a72.
 
-Then copy `tmp/RPI_EFI.fd` to the sd-card overriding the existing file:
+Then copy the generated files to the sd-card overriding the existing ones:
 
 ```bash
 install tmp/RPI_EFI.fd /media/$USER/RPI4-UEFI
+install tmp/Shell.efi /media/$USER/RPI4-UEFI
 ```
 
 ## Switching sub-modules repositories/branches
@@ -56,7 +55,7 @@ Clean and build:
 ```bash
 rm -rf Build
 # NB after a successful build Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd is
-#    copied to the host as /vagrant/tmp/RPI_EFI.fd.
+#    automatically copied to the host as /vagrant/tmp/RPI_EFI.fd.
 time ./rpi4-uefi-build-release.sh
 ```
 
