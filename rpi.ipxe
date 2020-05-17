@@ -20,6 +20,8 @@ echo IP address... ${net0/ip}
 echo Subnet mask.. ${net0/netmask}
 echo Gateway...... ${net0/gateway}
 echo DNS.......... ${net0/dns}
+echo Hostname..... ${hostname}
+echo Domain....... ${domain}
 
 # we need to set the time from ntp because the pi does not have an rtc.
 # NB having the correct time is a requirement to use TLS.
