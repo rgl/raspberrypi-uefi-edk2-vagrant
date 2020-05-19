@@ -33,7 +33,18 @@ ntp pool.ntp.org || goto retry_ntp
 # see https://ipxe.org/cfg/unixtime
 echo Unix Time.... ${unixtime}
 
-echo Dropping into the shell...
-echo TIP You can test-drive this with:
+echo Dropping into the iPXE shell...
+echo
+echo TIP You can launch the EFI shell with:
+echo
+echo       chain --autofree file:///Shell.efi -nostartup
+echo
+echo TIP You can execute an EFI shell command with:
+echo
+echo       chain --autofree file:///Shell.efi -exit smbiosview -t 3
+echo
+echo TIP You can download and execute a remote iPXE script with:
+echo
 echo       chain --autofree https://boot.netboot.xyz
+echo
 shell
