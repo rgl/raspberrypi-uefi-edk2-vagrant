@@ -9,6 +9,7 @@ git fetch origin master
 git checkout v1.20.1
 
 # configure.
+# see https://ipxe.org/buildcfg/cert_cmd
 # see https://ipxe.org/buildcfg/download_proto_https
 # see https://ipxe.org/buildcfg/image_trust_cmd
 # see https://ipxe.org/buildcfg/neighbour_cmd
@@ -20,6 +21,7 @@ git checkout v1.20.1
 # see https://ipxe.org/buildcfg
 # see https://ipxe.org/appnote/named_config
 cat >src/config/local/general.h <<'EOF'
+#define CERT_CMD                /* Certificate management commands */
 #define DOWNLOAD_PROTO_HTTPS    /* Secure Hypertext Transfer Protocol */
 #define IMAGE_TRUST_CMD         /* Image trust management commands */
 #define NEIGHBOUR_CMD           /* Neighbour management commands */
