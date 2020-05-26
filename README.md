@@ -88,11 +88,16 @@ install tmp/ipxe.efi /media/$USER/RPI4-UEFI/efi/boot/bootaa64.efi
 ```
 
 To configure UEFI to load it from an HTTP endpoint, you need to
-start an http server to serve `ipxe.efi`:
+start an HTTP 1.1 server to serve `ipxe.efi`:
 
 ```bash
-python3 -m http.server 8000 -d tmp
+wget -O- https://github.com/caddyserver/caddy/releases/download/v2.0.0/caddy_2.0.0_linux_amd64.tar.gz | tar xzf - caddy
+./caddy file-server --root tmp --listen :8000 --browse
 ```
+
+**NB** We cannot simply use `python3 -m http.server 8000 -d tmp` because the
+EDK2 HTTP client [assumes its talking to a HTTP/1.1 web server](https://bugzilla.tianocore.org/show_bug.cgi?id=2720),
+but by default, the python server is configured in HTTP 1.0 mode.
 
 Then power on the Raspberry Pi.
 
