@@ -23,6 +23,7 @@ git checkout v1.20.1
 cat >src/config/local/general.h <<'EOF'
 #define CERT_CMD                /* Certificate management commands */
 #define DOWNLOAD_PROTO_HTTPS    /* Secure Hypertext Transfer Protocol */
+#define DOWNLOAD_PROTO_TFTP     /* Trivial File Transfer Protocol */
 #define IMAGE_TRUST_CMD         /* Image trust management commands */
 #define NEIGHBOUR_CMD           /* Neighbour management commands */
 #define NSLOOKUP_CMD            /* Name resolution command */
@@ -30,7 +31,6 @@ cat >src/config/local/general.h <<'EOF'
 #define PARAM_CMD               /* Form parameter commands */
 #define PING_CMD                /* Ping command */
 #define POWEROFF_CMD            /* Power off command */
-#undef DOWNLOAD_PROTO_TFTP      /* Trivial File Transfer Protocol */
 #undef SANBOOT_PROTO_AOE        /* AoE protocol */
 EOF
 # see https://ipxe.org/buildcfg/keyboard_map

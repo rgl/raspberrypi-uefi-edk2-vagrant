@@ -22,6 +22,8 @@ echo Gateway...... ${net0/gateway}
 echo DNS.......... ${net0/dns}
 echo Hostname..... ${hostname}
 echo Domain....... ${domain}
+echo Next Server.. ${next-server}
+echo Filename..... ${filename}
 
 # we need to set the time from ntp because the pi does not have an rtc.
 # NB having the correct time is a requirement to use TLS.
@@ -34,6 +36,10 @@ ntp pool.ntp.org || goto retry_ntp
 echo Unix Time.... ${unixtime}
 
 echo Dropping into the iPXE shell...
+echo
+echo TIP You can boot from the DHCP configured EFI application with:
+echo
+echo       chain --autofree tftp://${next-server}/${filename}
 echo
 echo TIP You can launch the EFI shell with:
 echo
