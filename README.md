@@ -82,8 +82,8 @@ To configure UEFI to load it from an HTTP endpoint, you need to
 start an HTTP 1.1 server to serve `ipxe.efi`:
 
 ```bash
-wget -O- https://github.com/caddyserver/caddy/releases/download/v2.0.0/caddy_2.0.0_linux_amd64.tar.gz | tar xzf - caddy
-./caddy file-server --root tmp --listen :8000 --browse
+wget -O- https://github.com/caddyserver/caddy/releases/download/v2.1.0-beta.1/caddy_2.1.0-beta.1_linux_amd64.tar.gz | tar xzf - caddy
+./caddy file-server --root tmp --listen :8000 --browse --access-log
 ```
 
 **NB** We cannot simply use `python3 -m http.server 8000 -d tmp` because the
