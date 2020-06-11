@@ -5,7 +5,7 @@ the [Raspberry Pi 4 UEFI EDK2](https://github.com/pftf/RPi4) environment.
 
 ## Usage
 
-Install the [base Ubuntu 18.04 box](https://github.com/rgl/ubuntu-vagrant).
+Install the [base Ubuntu 20.04 box](https://github.com/rgl/ubuntu-vagrant).
 
 Start the environment:
 
