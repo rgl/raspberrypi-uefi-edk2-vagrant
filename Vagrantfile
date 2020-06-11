@@ -18,5 +18,6 @@ Vagrant.configure('2') do |config|
   config.vm.hostname = 'uefi'
   config.vm.provision :shell, path: 'provision-base.sh'
   config.vm.provision :shell, path: 'provision-edk2.sh'
+  config.vm.provision :shell, path: 'build-uefi.sh'
   config.vm.provision :shell, path: 'build-ipxe.sh'
 end

@@ -7,22 +7,10 @@ the [Raspberry Pi 4 UEFI EDK2](https://github.com/pftf/RPi4) environment.
 
 Install the [base Ubuntu 18.04 box](https://github.com/rgl/ubuntu-vagrant).
 
-Start this environment:
+Start the environment:
 
 ```bash
-time vagrant up
-```
-
-Enter the environment and build `RPI_EFI.fd`:
-
-```bash
-vagrant ssh
-
-# build the release version of RPI_EFI.fd.
-# NB after a successful build Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd is
-#    automatically copied to the host as /vagrant/tmp/RPI_EFI.fd.
-cd rpi4-uefi
-time ./rpi4-uefi-build-release.sh
+time vagrant up --no-destroy-on-error
 ```
 
 Then flash the sd-card as described at https://gist.github.com/rgl/95b8ccd6b3453f548907b579d4d04a72.
@@ -32,6 +20,9 @@ Then copy the generated files to the sd-card overriding the existing ones:
 ```bash
 install tmp/RPI_EFI.fd /media/$USER/RPI4-UEFI
 install tmp/Shell.efi /media/$USER/RPI4-UEFI
+install tmp/UiApp.efi /media/$USER/RPI4-UEFI
+install -d /media/$USER/RPI4-UEFI/efi/boot
+install tmp/ipxe.efi /media/$USER/RPI4-UEFI/efi/boot/bootaa64.efi
 ```
 
 ## Switching sub-modules repositories/branches

@@ -22,4 +22,5 @@ build \
 mkdir -p /vagrant/tmp
 cp Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd /vagrant/tmp/
 cp Build/RPi4/RELEASE_GCC5/AARCH64/Shell.efi /vagrant/tmp/
-ls -laF /vagrant/tmp/RPI_EFI.fd
+cp Build/RPi4/RELEASE_GCC5/AARCH64/UiApp.efi /vagrant/tmp/
+ls -laF /vagrant/tmp/{RPI_EFI.fd,Shell.efi,UiApp.efi}
