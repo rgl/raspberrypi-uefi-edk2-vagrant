@@ -13,16 +13,17 @@ Start the environment:
 time vagrant up --no-destroy-on-error
 ```
 
-Then flash the sd-card as described at https://gist.github.com/rgl/95b8ccd6b3453f548907b579d4d04a72.
+Then [flash the sd-card](#sd-card-flashing).
 
 Then copy the generated files to the sd-card overriding the existing ones:
 
 ```bash
-install tmp/RPI_EFI.fd /media/$USER/RPI4-UEFI
-install tmp/Shell.efi /media/$USER/RPI4-UEFI
-install tmp/UiApp.efi /media/$USER/RPI4-UEFI
-install -d /media/$USER/RPI4-UEFI/efi/boot
-install tmp/ipxe.efi /media/$USER/RPI4-UEFI/efi/boot/bootaa64.efi
+target=/media/$USER/RPI4-UEFI
+install tmp/RPI_EFI.fd $target
+install tmp/Shell.efi $target
+install tmp/UiApp.efi $target
+install -d $target/efi/boot
+install tmp/ipxe.efi $target/efi/boot/bootaa64.efi
 ```
 
 ## Switching sub-modules repositories/branches
@@ -211,10 +212,168 @@ EOF
 sudo minicom --color=on rpi
 ```
 
+## sd-card flashing
+
+Find which device was allocated for the sd-card that will store the uefi firmware:
+
+```bash
+lsblk -o KNAME,SIZE,TRAN,FSTYPE,UUID,LABEL,MODEL,SERIAL
+# lsblk should output all the plugged block devices, in my case, this is the device that I'm interested in:
+#
+#   sde    28,9G usb                                                                STORAGE DEVICE   000000078
+#   sde1    256M        vfat   9F2D-0578                            boot
+#   sde2    6,1G        ext4   efc2ea8b-042f-47f5-953e-577d8860de55 rootfs
+```
+
+Wipe the sd-card (in this example its at `/dev/sde`) and put the [pftf/RPi4 firmware](https://github.com/pftf/RPi4) in it:
+
+**NB** the rpi4 `recovery.bin` (which will end up inside the eeprom) bootloader only
+supports booting from an MBR/MSDOS partition type/table/label and from a
+FAT32 LBA (0x0c) or FAT16 LBA (0x0e) partition types/filesystem. Eventually
+[it will support GPT](https://github.com/raspberrypi/rpi-eeprom/issues/126).
+
+**NB** the rpi4 bootloader that is inside the [mask rom](https://en.wikipedia.org/wiki/Mask_ROM) also [seems to support GPT](https://github.com/raspberrypi/rpi-eeprom/issues/126#issuecomment-628719223), but until its supported by `recovery.bin` we cannot use a GPT.
+
+```bash
+# switch to root.
+sudo -i
+
+# set the sd-card target device and mount point.
+target_device=/dev/sde
+target=/mnt/rpi4-uefi
+
+# umount any existing partition that you might have already mounted.
+umount ${target_device}?
+
+# format the sd-card at $target_device.
+parted --script $target_device mklabel msdos
+parted --script $target_device mkpart primary fat32 4 100
+parted $target_device print
+# Model: Generic STORAGE DEVICE (scsi)
+# Disk /dev/sde: 31,0GB
+# Sector size (logical/physical): 512B/512B
+# Partition Table: msdos
+# Disk Flags:
+#
+# Number  Start   End     Size    Type     File system  Flags
+#  1      4194kB  2048MB  2044MB  primary  fat32        lba
+mkfs -t vfat -n RPI4-UEFI ${target_device}1
+
+# install the firmware in the sd-card.
+mkdir -p $target
+mount ${target_device}1 $target
+# get the rpi4 uefi firmware.
+wget https://github.com/pftf/RPi4/releases/download/v1.15/RPi4_UEFI_Firmware_v1.15.zip
+unzip RPi4_UEFI_Firmware_v1.15.zip -d $target
+# add the drivers for the AX88179 gigabit ethernet chip.
+# NB this is needed for my UGREEN USB 3.0 to RJ45 Ethernet Gigabit Lan Adapter.
+#    see https://www.ugreen.com/product/UGREEN_Network_Adapter_USB_to_Ethernet_RJ45_Lan_Gigabit_Adapter_for_Ethernet_Black-en.html
+# NB this is needed because out-of-the-box edk2 only supports the chips at:
+#      https://github.com/tianocore/edk2-platforms/tree/master/Drivers/OptionRomPkg/Bus/Usb/UsbNetworking
+wget https://www.asix.com.tw/FrootAttach/driver/AX88179_178A_UEFI_V2.8.0_ARM_AARCH64.zip
+unzip AX88179_178A_UEFI_V2.8.0_ARM_AARCH64.zip -d $target
+
+# setup the uefi shell to automatically load the driver.
+# NB press F1 at the raspberry pi boot logo to enter the uefi shell
+#    and automatically execute this startup.nsh script.
+# RPi4_UEFI_Firmware_v1.15.zip ver is:
+#       UEFI Interactive Shell v2.2
+#       EDK II
+#       UEFI v2.70 (https://github.com/pftf/RPi4, 0x00010000)
+# see https://github.com/pftf/RPi4/issues/13
+# see https://github.com/tianocore/tianocore.github.io/wiki/HTTP-Boot
+# see https://uefi.org/sites/default/files/resources/UEFI_Shell_Spec_2_0.pdf
+cat >$target/startup.nsh <<EOF
+# set the terminal size.
+mode 80 50 # make the terminal a bit taller.
+mode       # show the available terminal modes.
+
+# show the UEFI versions.
+ver
+
+# show the memory map.
+memmap
+
+# show the disks and filesystems.
+map
+
+# show the environment variables.
+set
+
+# show all UEFI variables.
+#dmpstore
+
+# show some rpi uefi variables.
+# show the RAM Limit to 3 GB int32 (little endian) variable.
+# possible values:
+#   00 00 00 00: do not limit the ram to 3GB.
+#   01 00 00 00: limit the ram to 3GB (default).
+setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 RamLimitTo3GB
+# show the System Table Selection int32 (little endian) variable.
+# possible values:
+#   00 00 00 00: ACPI (default).
+#   01 00 00 00: ACPI and DT.
+#   02 00 00 00: DT.
+setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 SystemTableMode
+# show the smbios asset tag string variable.
+setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 AssetTag
+
+# change to the first filesystem and show its contents.
+FS0:
+dir
+
+# load the network interface driver.
+load FS0:\AX88179_178A_UEFI_V2.8.0_ARM_AARCH64\AX88179_178A_UEFI_V2.8.0_AARCH64.efi
+#connect -r
+
+# configure the network interface to use DHCP.
+ifconfig -l
+ifconfig -s eth0 dhcp # NB this starts the DHCP request in background.
+# sleep 10s (10 followed by 6 zeros) and hope dhcp has worked.
+@echo "waiting 10s to give dhcp time to come up..."
+stall 10000000
+ifconfig -l
+
+# test pinging a machine in my network.
+ping -n 4 192.168.1.69
+
+# show more more information about drivers.
+# the "drivers" command displays all the drivers, the AX88179 is normally the last one:
+#               T   D
+#   D           Y C I
+#   R           P F A
+#   V  VERSION  E G G #D #C DRIVER NAME                        IMAGE NAME
+#   == ======== = = = == == ================================== ==========
+#   A3 0000000A B - -  1  1 ASIX AX88179 Ethernet Driver 2.8.0 \AX88179_178A_UEFI_V2.8.0_AARCH64.efi
+#drivers
+#dh -d A3 -v # NB "A3" is the value of the first column "DRV".
+
+# you can edit file with edit.
+#edit FS0:\startup.nsh
+
+@echo "TIP: Press the Page-Up key to see the terminal history"
+EOF
+
+# check the results.
+find $target
+
+# eject the sd-card.
+umount $target
+eject $target_device
+```
+
 ## Reference
 
-* https://github.com/pftf/RPi4/blob/v1.14/appveyor.yml
-* https://github.com/pftf/RPi4/blob/v1.14/build_firmware.sh
+* https://github.com/pftf/RPi4/blob/v1.15/appveyor.yml
+* https://github.com/pftf/RPi4/blob/v1.15/build_firmware.sh
+* [UEFI Driver Writer's Guide](https://github.com/tianocore/tianocore.github.io/wiki/UEFI-Driver-Writer%27s-Guide)
+* https://en.opensuse.org/UEFI_HTTPBoot_Server_Setup
+  * https://patchwork.kernel.org/patch/9231147/
+* https://github.com/pftf/RPi4/issues/13
+* https://github.com/tianocore/tianocore.github.io/wiki/HTTP-Boot
+* https://github.com/tianocore/edk2-platforms/tree/master/Drivers/OptionRomPkg/Bus/Usb/UsbNetworking
+* https://github.com/tianocore/tianocore.github.io/wiki/ShellPkg
+* http://www.uefi.org/sites/default/files/resources/UEFI_Shell_2_2.pdf
 
 ## Interesting projects
 
