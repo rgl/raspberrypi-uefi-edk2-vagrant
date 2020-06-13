@@ -351,6 +351,10 @@ ping -n 4 192.168.1.69
 # you can edit file with edit.
 #edit FS0:\startup.nsh
 
+# set the smbios asset tag.
+# NB this has a maximum of 32-characters.
+setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 -bs -rt -nv AssetTag =L"PI00000001" =0x0000
+
 @echo "TIP: Press the Page-Up key to see the terminal history"
 EOF
 
