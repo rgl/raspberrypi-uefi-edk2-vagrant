@@ -351,6 +351,11 @@ ping -n 4 192.168.1.69
 # you can edit file with edit.
 #edit FS0:\startup.nsh
 
+# do not limit the ram to 3GB.
+# NB this only applies after you reboot the pi with the reset command.
+setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 -bs -rt -nv RamLimitTo3GB =0x00000000
+setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 RamLimitTo3GB # show
+
 # set the smbios asset tag.
 # NB this has a maximum of 32-characters.
 setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 -bs -rt -nv AssetTag =L"PI00000001" =0x0000
