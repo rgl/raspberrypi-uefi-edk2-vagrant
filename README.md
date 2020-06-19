@@ -263,8 +263,8 @@ mkfs -t vfat -n RPI4-UEFI ${target_device}1
 mkdir -p $target
 mount ${target_device}1 $target
 # get the rpi4 uefi firmware.
-wget https://github.com/pftf/RPi4/releases/download/v1.15/RPi4_UEFI_Firmware_v1.15.zip
-unzip RPi4_UEFI_Firmware_v1.15.zip -d $target
+wget https://github.com/pftf/RPi4/releases/download/v1.16/RPi4_UEFI_Firmware_v1.16.zip
+unzip RPi4_UEFI_Firmware_v1.16.zip -d $target
 # add the drivers for the AX88179 gigabit ethernet chip.
 # NB this is needed for my UGREEN USB 3.0 to RJ45 Ethernet Gigabit Lan Adapter.
 #    see https://www.ugreen.com/product/UGREEN_Network_Adapter_USB_to_Ethernet_RJ45_Lan_Gigabit_Adapter_for_Ethernet_Black-en.html
@@ -276,7 +276,7 @@ unzip AX88179_178A_UEFI_V2.8.0_ARM_AARCH64.zip -d $target
 # setup the uefi shell to automatically load the driver.
 # NB press F1 at the raspberry pi boot logo to enter the uefi shell
 #    and automatically execute this startup.nsh script.
-# RPi4_UEFI_Firmware_v1.15.zip ver is:
+# RPi4_UEFI_Firmware_v1.16.zip ver is:
 #       UEFI Interactive Shell v2.2
 #       EDK II
 #       UEFI v2.70 (https://github.com/pftf/RPi4, 0x00010000)
@@ -324,7 +324,9 @@ dir
 
 # load the network interface driver.
 load FS0:\AX88179_178A_UEFI_V2.8.0_ARM_AARCH64\AX88179_178A_UEFI_V2.8.0_AARCH64.efi
-#connect -r
+
+# connect all the drivers to all the devices, recursively.
+connect -r
 
 # configure the network interface to use DHCP.
 ifconfig -l
@@ -373,8 +375,8 @@ eject $target_device
 
 ## Reference
 
-* https://github.com/pftf/RPi4/blob/v1.15/appveyor.yml
-* https://github.com/pftf/RPi4/blob/v1.15/build_firmware.sh
+* https://github.com/pftf/RPi4/blob/v1.16/appveyor.yml
+* https://github.com/pftf/RPi4/blob/v1.16/build_firmware.sh
 * [UEFI Driver Writer's Guide](https://github.com/tianocore/tianocore.github.io/wiki/UEFI-Driver-Writer%27s-Guide)
 * https://en.opensuse.org/UEFI_HTTPBoot_Server_Setup
   * https://patchwork.kernel.org/patch/9231147/
