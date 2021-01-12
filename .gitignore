@@ -1,4 +1,3 @@
 .vagrant/
 tmp/
-*.zip
 caddy

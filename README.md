@@ -267,11 +267,11 @@ wget https://github.com/pftf/RPi4/releases/download/v1.22/RPi4_UEFI_Firmware_v1.
 unzip RPi4_UEFI_Firmware_v1.22.zip -d $target
 # add the drivers for the AX88179 gigabit ethernet chip.
 # NB this is needed for my UGREEN USB 3.0 to RJ45 Ethernet Gigabit Lan Adapter.
-#    see https://www.ugreen.com/product/UGREEN_Network_Adapter_USB_to_Ethernet_RJ45_Lan_Gigabit_Adapter_for_Ethernet_Black-en.html
+#    see https://www.ugreen.com/products/usb-3-0-to-rj45-gigabit-ethernet-adapter
 # NB this is needed because out-of-the-box edk2 only supports the chips at:
 #      https://github.com/tianocore/edk2-platforms/tree/master/Drivers/OptionRomPkg/Bus/Usb/UsbNetworking
-wget https://www.asix.com.tw/FrootAttach/driver/AX88179_178A_UEFI_V2.8.0_ARM_AARCH64.zip
-unzip AX88179_178A_UEFI_V2.8.0_ARM_AARCH64.zip -d $target
+# See https://www.asix.com.tw/en/product/USBEthernet/Super-Speed_USB_Ethernet/AX88179
+unzip drivers/AX88179_178A_UEFI_V2.8.0_ARM_AARCH64.zip -d $target
 
 # setup the uefi shell to automatically load the driver.
 # NB press F1 at the raspberry pi boot logo to enter the uefi shell
