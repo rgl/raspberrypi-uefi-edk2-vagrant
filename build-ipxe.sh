@@ -6,7 +6,7 @@ cd ~
 [ -d ipxe ] || git clone https://github.com/ipxe/ipxe.git ipxe
 cd ipxe
 git fetch origin master
-git checkout v1.20.1
+git checkout v1.21.1
 
 # configure.
 # see https://ipxe.org/buildcfg/cert_cmd
