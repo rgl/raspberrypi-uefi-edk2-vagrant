@@ -26,6 +26,28 @@ install -d $target/efi/boot
 install tmp/ipxe.efi $target/efi/boot/bootaa64.efi
 ```
 
+After it boots, you want to execute `startup.nsh` to configure the Pi.
+
+You can do it either from the UEFI or iPXE shell.
+
+From the UEFI shell:
+
+```
+fs0:
+startup.sh
+exit
+```
+
+From the iPXE shell:
+
+```
+chain --autofree file:///Shell.efi -nostartup
+fs1:
+startup.sh
+exit
+exit
+```
+
 ## Switching sub-modules repositories/branches
 
 You can switch to a different sub-module repository/branch. For example,
@@ -83,7 +105,7 @@ To configure UEFI to load it from an HTTP endpoint, you need to
 start an HTTP 1.1 server to serve `ipxe.efi`:
 
 ```bash
-wget -O- https://github.com/caddyserver/caddy/releases/download/v2.3.0/caddy_2.3.0_linux_amd64.tar.gz | tar xzf - caddy
+wget -O- https://github.com/caddyserver/caddy/releases/download/v2.4.1/caddy_2.4.1_linux_amd64.tar.gz | tar xzf - caddy
 ./caddy file-server --root tmp --listen :8000 --browse --access-log
 ```
 
@@ -102,7 +124,7 @@ then:
    press `ENTER`.
 4. Select `HTTP Boot Configuration` and press `ENTER`.
 5. Select `Boot URI` and press `ENTER`, then input the `ipxe.efi` url made
-   available by the http server, e.g., `http://192.168.1.69:8000/ipxe.efi`,
+   available by the http server, e.g., `http://192.168.1.1:8000/ipxe.efi`,
    and press `ENTER`.
 6. Press `F10` to save the changes.
 7. Keep pressing `ESC` until you reach the main setup menu.
@@ -263,8 +285,8 @@ mkfs -t vfat -n RPI4-UEFI ${target_device}1
 mkdir -p $target
 mount ${target_device}1 $target
 # get the rpi4 uefi firmware.
-wget https://github.com/pftf/RPi4/releases/download/v1.22/RPi4_UEFI_Firmware_v1.22.zip
-unzip RPi4_UEFI_Firmware_v1.22.zip -d $target
+wget https://github.com/pftf/RPi4/releases/download/v1.27/RPi4_UEFI_Firmware_v1.27.zip
+unzip RPi4_UEFI_Firmware_v1.27.zip -d $target
 # add the drivers for the AX88179 gigabit ethernet chip.
 # NB this is needed for my UGREEN USB 3.0 to RJ45 Ethernet Gigabit Lan Adapter.
 #    see https://www.ugreen.com/products/usb-3-0-to-rj45-gigabit-ethernet-adapter
@@ -276,7 +298,7 @@ unzip drivers/AX88179_178A_UEFI_V2.8.0_ARM_AARCH64.zip -d $target
 # setup the uefi shell to automatically load the driver.
 # NB press F1 at the raspberry pi boot logo to enter the uefi shell
 #    and automatically execute this startup.nsh script.
-# RPi4_UEFI_Firmware_v1.22.zip ver is:
+# RPi4_UEFI_Firmware_v1.27.zip ver is:
 #       UEFI Interactive Shell v2.2
 #       EDK II
 #       UEFI v2.70 (https://github.com/pftf/RPi4, 0x00010000)
@@ -337,7 +359,7 @@ stall 10000000
 ifconfig -l
 
 # test pinging a machine in my network.
-ping -n 4 192.168.1.69
+ping -n 4 192.168.1.1
 
 # show more more information about drivers.
 # the "drivers" command displays all the drivers, the AX88179 is normally the last one:
@@ -361,6 +383,7 @@ setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 RamLimitTo3GB # show
 # set the smbios asset tag.
 # NB this has a maximum of 32-characters.
 setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 -bs -rt -nv AssetTag =L"PI00000001" =0x0000
+setvar -guid CD7CC258-31DB-22E6-9F22-63B0B8EED6B5 AssetTag # show
 
 @echo "TIP: Press the Page-Up key to see the terminal history"
 EOF
@@ -371,12 +394,16 @@ find $target
 # eject the sd-card.
 umount $target
 eject $target_device
+
+# exit the root shell.
+exit
 ```
+
+Remove the sd-card from the computer. 
 
 ## Reference
 
-* https://github.com/pftf/RPi4/blob/v1.22/appveyor.yml
-* https://github.com/pftf/RPi4/blob/v1.22/build_firmware.sh
+* https://github.com/pftf/RPi4/blob/v1.27/.github/workflows/linux_edk2.yml
 * [UEFI Driver Writer's Guide](https://github.com/tianocore/tianocore.github.io/wiki/UEFI-Driver-Writer%27s-Guide)
 * https://en.opensuse.org/UEFI_HTTPBoot_Server_Setup
   * https://patchwork.kernel.org/patch/9231147/
